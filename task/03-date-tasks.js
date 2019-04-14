@@ -22,7 +22,7 @@
  *    'Sun, 17 May 1998 03:00:00 GMT+01' => Date()
  */
 function parseDataFromRfc2822(value) {
-   throw new Error('Not implemented');
+   return new Date(value);
 }
 
 /**
@@ -37,7 +37,7 @@ function parseDataFromRfc2822(value) {
  *    '2016-01-19T08:07:37Z' => Date()
  */
 function parseDataFromIso8601(value) {
-   throw new Error('Not implemented');
+   return Date.parse(value);
 }
 
 
@@ -56,7 +56,10 @@ function parseDataFromIso8601(value) {
  *    Date(2015,1,1)    => false
  */
 function isLeapYear(date) {
-   throw new Error('Not implemented');
+   if ((date.getFullYear() % 4 == 0) && (date.getFullYear() % 100 != 0) || (date.getFullYear() % 400 == 0)) {
+      return true;
+   }
+   return false;
 }
 
 
@@ -76,7 +79,21 @@ function isLeapYear(date) {
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,15,20,10,453)   => "05:20:10.453"
  */
 function timeSpanToString(startDate, endDate) {
-   throw new Error('Not implemented');
+   let timeSpan;
+   timeSpan = endDate.getTime() - startDate.getTime();
+   let h, m, s, ms;
+   s = Math.floor(timeSpan / 1000);
+   m = Math.floor(s / 60);
+   s = s % 60;
+   h = Math.floor(m / 60);
+   m = m % 60;
+   h = h % 24;
+   ms = Math.floor((timeSpan % 1000) * 1000) / 1000;
+   h = "00" + h;
+   m = "00" + m;
+   s = "00" + s;
+   ms = "000" + ms;
+   return `${h.substr(h.length - 2, 2)}:${m.substr(m.length - 2, 2)}:${s.substr(s.length - 2, 2)}.${ms.substr(ms.length - 3, 3)}`;
 }
 
 
@@ -94,14 +111,19 @@ function timeSpanToString(startDate, endDate) {
  *    Date.UTC(2016,3,5,21, 0) => Math.PI/2
  */
 function angleBetweenClockHands(date) {
-    throw new Error('Not implemented');
+   let angle, hours, minutes;
+   hours = date.getUTCHours();
+   hours > 12 ? hours = hours - 12 : hours;
+   minutes = date.getUTCMinutes();
+   angle = Math.abs(0.5 * (60 * hours - minutes * 11));
+   return angle <= 180 ? angle / 180 * Math.PI  : (360 - angle) / 180 * Math.PI;
 }
 
 
 module.exports = {
-    parseDataFromRfc2822: parseDataFromRfc2822,
-    parseDataFromIso8601: parseDataFromIso8601,
-    isLeapYear: isLeapYear,
-    timeSpanToString: timeSpanToString,
-    angleBetweenClockHands: angleBetweenClockHands
+   parseDataFromRfc2822: parseDataFromRfc2822,
+   parseDataFromIso8601: parseDataFromIso8601,
+   isLeapYear: isLeapYear,
+   timeSpanToString: timeSpanToString,
+   angleBetweenClockHands: angleBetweenClockHands
 };
